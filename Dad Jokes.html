@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dad Joke Simulator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .joke-wrap { max-width: 600px; width: 100%; text-align: center; padding: 2rem 1.5rem; }
+    h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 0.5rem; }
+    .badge { display: inline-block; background: #ebebeb; border-radius: 20px; font-size: 12px; color: #666; padding: 4px 14px; margin-bottom: 1.5rem; }
+    .joke-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 14px; padding: 2rem; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 0 1.25rem; }
+    .setup { font-size: 17px; color: #1a1a1a; line-height: 1.6; display: none; }
+    .punchline { font-size: 17px; font-weight: 500; color: #1a1a1a; margin-top: 1rem; line-height: 1.6; display: none; }
+    .placeholder { font-size: 15px; color: #999; }
+    .reveal-btn { background: transparent; border: 1px solid #ccc; border-radius: 8px; padding: 9px 22px; font-size: 14px; color: #555; cursor: pointer; margin-bottom: 0.75rem; display: none; }
+    .reveal-btn:hover { background: #f0f0f0; }
+    .main-btn { background: transparent; border: 1px solid #ccc; border-radius: 8px; padding: 11px 28px; font-size: 15px; font-weight: 500; color: #1a1a1a; cursor: pointer; }
+    .main-btn:hover { background: #f0f0f0; }
+    .main-btn:active { transform: scale(0.97); }
+    .groan { font-size: 13px; color: #aaa; margin-top: 0.75rem; opacity: 0; transition: opacity 0.4s; height: 20px; }
+    .counter { font-size: 13px; color: #bbb; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+<div class="joke-wrap">
+  <div class="badge">Dad Joke Simulator</div>
+  <div class="joke-card" id="jokeCard">
+    <p class="placeholder" id="placeholder">Hit the button to get a joke...</p>
+    <p class="setup" id="setup"></p>
+    <p class="punchline" id="punchline"></p>
+  </div>
+  <button class="reveal-btn" id="revealBtn" onclick="revealPunchline()">Reveal punchline</button><br>
+  <button class="main-btn" id="jokeBtn" onclick="nextJoke()">Tell me a joke!</button>
+  <p class="groan" id="groan">*dad laughs at his own joke*</p>
+  <p class="counter" id="counter"></p>
+</div>
+
+<script>
+const jokes = [
+  ["Why don't scientists trust atoms?", "Because they make up everything!"],
+  ["I'm reading a book about anti-gravity.", "It's impossible to put down."],
+  ["Did you hear about the guy who invented Lifesavers?", "He made a mint."],
+  ["Why can't you give Elsa a balloon?", "Because she'll let it go."],
+  ["I used to hate facial hair...", "But then it grew on me."],
+  ["Why did the scarecrow win an award?", "Because he was outstanding in his field."],
+  ["I'm on a seafood diet.", "I see food and I eat it."],
+  ["What do you call cheese that isn't yours?", "Nacho cheese."],
+  ["Why did the bicycle fall over?", "Because it was two-tired."],
+  ["I told my wife she should embrace her mistakes.", "She gave me a hug."],
+  ["What do you call a fish without eyes?", "A fsh."],
+  ["I would tell you a construction joke...", "But I'm still working on it."],
+  ["Why don't eggs tell jokes?", "They'd crack each other up."],
+  ["What do you call a fake noodle?", "An impasta."],
+  ["I asked the librarian if they had books about paranoia.", "She whispered, 'They're right behind you!'"],
+  ["Why can't a nose be 12 inches long?", "Because then it'd be a foot."],
+  ["What's a skeleton's least favorite room?", "The living room."],
+  ["I thought about going on an all-almond diet...", "But that's just nuts."],
+  ["Why did the math book look so sad?", "Because it had too many problems."],
+  ["What did the ocean say to the beach?", "Nothing, it just waved."],
+  ["How do you organize a space party?", "You planet."],
+  ["I told my doctor I broke my arm in two places.", "He told me to stop going to those places."],
+  ["What do you call a sleeping dinosaur?", "A dino-snore."],
+  ["Why do cows wear bells?", "Because their horns don't work."],
+  ["I'm afraid of elevators.", "I'm going to start taking steps to avoid them."],
+  ["What did one wall say to the other?", "I'll meet you at the corner."],
+  ["What do you call a pony with a sore throat?", "A little hoarse."],
+  ["I used to work in a shoe recycling shop.", "It was sole destroying."],
+  ["What do you call a bear with no teeth?", "A gummy bear."],
+  ["Why did the golfer bring extra pants?", "In case he got a hole in one."],
+];
+
+let count = 0;
+let punchRevealed = false;
+let pool = shuffle([...Array(jokes.length).keys()]);
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function nextJoke() {
+  if (pool.length === 0) pool = shuffle([...Array(jokes.length).keys()]);
+  const idx = pool.pop();
+  const [setup, punchline] = jokes[idx];
+  count++;
+
+  document.getElementById('placeholder').style.display = 'none';
+  const sEl = document.getElementById('setup');
+  sEl.style.display = 'block';
+  sEl.textContent = setup;
+
+  const pEl = document.getElementById('punchline');
+  pEl.textContent = punchline;
+  pEl.style.display = 'none';
+
+  const groan = document.getElementById('groan');
+  groan.style.opacity = '0';
+
+  const rev = document.getElementById('revealBtn');
+  rev.style.display = 'inline-block';
+
+  punchRevealed = false;
+  document.getElementById('counter').textContent = 'Jokes heard: ' + count;
+  document.getElementById('jokeBtn').textContent = 'Another one!';
+}
+
+function revealPunchline() {
+  if (punchRevealed) return;
+  punchRevealed = true;
+  document.getElementById('punchline').style.display = 'block';
+  document.getElementById('revealBtn').style.display = 'none';
+  setTimeout(() => document.getElementById('groan').style.opacity = '1', 600);
+}
+</script>
+</body>
+</html>
